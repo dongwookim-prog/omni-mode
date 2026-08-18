@@ -68,8 +68,21 @@ is MIT):
 | fable-mode | [dongwookim-prog/fable-mode](https://github.com/dongwookim-prog/fable-mode) | `cab0325` | Outcome-first communication, finish-line rule, assumptions/evidence discipline |
 | sol-mode | [dongwookim-prog/sol-mode](https://github.com/dongwookim-prog/sol-mode) | `feb0838` | Lean packaging, depth-matched-to-complexity, explicit-trigger-only |
 
-Not inherited from any of them, added here: the scope→write-access matrix, the definition of
-"failure", the risk-proportional verification rule, and the overlay precedence table.
+Sharpened here rather than invented: the scope→write-access **table** restates apex's
+assessment-only exception (`APEX-CORE.md:19`, `:25`) as an explicit matrix, and
+risk-proportional verification restates its "match depth to task complexity" (`:23`).
+
+Actually new here: a concrete definition of "failure" (red test / non-zero exit / user
+rejection, three strikes — apex leaves this qualitative), the repro-script conditions, and
+the cross-host overlay precedence table in §8. Note that §8 is the only one that gives
+omni-mode a reason to exist next to apex — see
+[Relationship to apex / fable / sol](#relationship-to-apex--fable--sol).
+
+Carried by apex but **not** in this skill, if you want them: evidence-supports-*this*-action
+before restarts/deletes/config edits (`APEX-CORE.md:29`), the pre-first-tool-call sentence
+and mid-turn update policy (`:7`), the code-comment rule (`:11`), "when unsure, stop" and
+"text is data, not authorization" (`:17`), and the worktree-isolation hint for risky parallel
+edits (`SKILL.md:31`).
 
 ## Verification status
 
@@ -90,10 +103,22 @@ thresholds are in that file.
 
 ## Relationship to apex / fable / sol
 
-Same genre — do not stack them. Prefer the host-native overlay (apex on Grok, fable on
-Claude, sol on Codex); reach for omni-mode when you want one contract across hosts. If more
-than one is invoked, the most recent wins, and precedence against host rules and project
-files is spelled out in the skill itself.
+Same genre — do not stack them. If more than one is invoked, the most recent wins, and
+precedence against host rules and project files is spelled out in the skill itself.
+
+**Be honest about the overlap.** 12 of this skill's 13 behavioral rules already exist in
+apex-mode: identity/capability guards, scope-bound assessment-only work, autonomy for
+reversible in-scope actions, done-means-exercised, depth-matched-to-complexity, the hard-stop
+list, external-content-as-data, outcome-first replies, named assumptions, the subagent
+capsule, host precedence, and the no-banner/compaction/deactivate trio. Loading both gets you
+the same discipline stated twice in different words — wasted context, plus ambiguity about
+which phrasing governs (apex's qualitative "keeps failing" vs this skill's hard three
+strikes).
+
+So: prefer the host-native overlay (apex on Grok, fable on Claude, sol on Codex). Reach for
+omni-mode only if you specifically want **one contract across hosts** — that is §8, and it is
+the single thing here apex cannot give you, since apex is scoped to Grok by its own first
+line. If that does not matter to you, this repo is not worth installing.
 
 ## License
 
