@@ -5,7 +5,8 @@ One high-agency working discipline for coding agents, packaged as an Agent Skill
 It is the **union** of [apex-mode](https://github.com/dongwookim-prog/apex-mode),
 [fable-mode](https://github.com/dongwookim-prog/fable-mode), and
 [sol-mode](https://github.com/dongwookim-prog/sol-mode): every behavioral rule from all three
-is in this one skill. Install this instead of those three, not alongside them.
+is in this one skill. On any one host, use it instead of those three rather than alongside
+them.
 
 **Status:** draft. Loadable, and rule coverage is machine-checked; live behavior is not yet
 validated. See [Verification status](#verification-status).
@@ -40,7 +41,11 @@ cp -r omni-mode/skills/omni-mode ~/.gemini/skills/omni-mode
 In Gemini CLI: `/skills reload`, then confirm with `/skills list`.
 
 Copy only `skills/omni-mode/` — the repo root's `README.md`, `evals/`, and `.git` are not part
-of the skill. If you already have apex/fable/sol installed, remove them; this replaces them.
+of the skill.
+
+Within a single host, use this **instead of** apex/fable/sol — it is their union, so running
+two of them stacks the same rules twice. Across hosts they do not collide, so keeping
+apex-mode on Grok while omni-mode runs on Gemini is fine.
 
 ## Activation
 
