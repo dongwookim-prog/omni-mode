@@ -1,28 +1,29 @@
 # omni-mode
 
-A high-agency working discipline for coding agents, packaged as an Agent Skill.
+One high-agency working discipline for coding agents, packaged as an Agent Skill.
 
-**Status:** draft. Loadable and reviewable; not yet validated by a comparison run. See
-[Verification status](#verification-status).
+It is the **union** of [apex-mode](https://github.com/dongwookim-prog/apex-mode),
+[fable-mode](https://github.com/dongwookim-prog/fable-mode), and
+[sol-mode](https://github.com/dongwookim-prog/sol-mode): every behavioral rule from all three
+is in this one skill. Install this instead of those three, not alongside them.
+
+**Status:** draft. Loadable, and rule coverage is machine-checked; live behavior is not yet
+validated. See [Verification status](#verification-status).
 
 ## What it does
 
-When explicitly invoked, it applies four things:
-
 - **Maximum autonomy inside the permissions the host already grants** — reversible, in-scope
-  work proceeds without asking. Questions are batched, not serialized.
-- **Scope-bound write access** — "review this" and "diagnose this" are read-only. Autonomy
-  is about *how* you work, never about widening what was asked.
+  work proceeds without asking. Questions get batched, not serialized.
+- **Scope-bound write access** — "review this", "diagnose this", or thinking out loud are
+  assessment-only. Autonomy governs *how* you work, never *how much you were asked to do*.
 - **Risk-proportional verification** — done means you exercised the changed path. A rename
   needs a build; a payment path needs tests. Unverifiable work is reported as unverified.
 - **Outcome-first replies** — result first, no filler, no activation banner.
 
-It is a behavior overlay. It does **not** change the model, reasoning effort, permission
-mode, sandbox, or tool availability, and it cannot bypass host approval prompts.
+It is a behavior overlay. It does **not** change the model, reasoning effort, permission mode,
+sandbox, or tool availability, and it cannot bypass host approval prompts.
 
 ## Install
-
-Copy the skill directory into a skills path your host scans:
 
 ```bash
 git clone https://github.com/dongwookim-prog/omni-mode.git
@@ -33,92 +34,79 @@ cp -r omni-mode/skills/omni-mode ~/.gemini/skills/omni-mode
 |---|---|
 | Gemini CLI | `~/.gemini/skills/` or `~/.agents/skills/` (user) · `.gemini/skills/` or `.agents/skills/` (workspace) |
 | Claude Code | `~/.claude/skills/` (user) · `.claude/skills/` (project) |
+| Codex | `~/.agents/skills/` (user) · `.agents/skills/` (repo) |
 | Other | wherever that host scans for `SKILL.md` |
 
-Then in Gemini CLI: `/skills reload`, and confirm with `/skills list`.
+In Gemini CLI: `/skills reload`, then confirm with `/skills list`.
 
-Only `skills/omni-mode/` belongs in the skills path — do not copy the repo root (its
-`README.md` and `.git` are not part of the skill).
+Copy only `skills/omni-mode/` — the repo root's `README.md`, `evals/`, and `.git` are not part
+of the skill. If you already have apex/fable/sol installed, remove them; this replaces them.
 
 ## Activation
 
 Agent Skills activate **semantically from the frontmatter `description`**, not from a slash
-command. Ask for it in words:
+command. Ask in words:
 
 ```
 omni 모드로 이 마이그레이션 처리해줘
 use omni-mode for this refactor
 ```
 
-To stop, say so ("omni 모드 꺼줘"). There is no `/omni-mode` command — this repo ships a
-skill, not a custom command or extension. Building one would require a Gemini custom-command
-TOML or an extension manifest, which is out of scope here.
+There is no `/omni-mode` command — this repo ships a skill, not a custom command or extension.
+The discipline is turn-scoped; ask again on a later turn and after compaction.
 
-The discipline is not guaranteed to survive compaction or a new session. Ask again when you
-need it later.
+## What came from where
 
-## Provenance
+All 31 behavioral rules of the three sources are present. `evals/coverage.py` checks this
+mechanically and fails if any rule is dropped.
 
-Synthesized from three same-owner overlays (none carried a license file; this repo's own text
-is MIT):
+| Source | Commit | Rules contributed |
+|---|---|---|
+| apex-mode | `e71bc9c` | Identity/capability guards · host precedence · no-banner · compaction caveat · self-contained subagent capsule · worktree isolation · protecting work you do not own |
+| fable-mode | `cab0325` | First-tool-call sentence · mid-turn update policy · final-message-carries-everything · finish-line anti-pattern list · "when unsure, stop" · end-only-when-blocked |
+| sol-mode | `feb0838` | Turn-scoped honesty · depth-matched-to-complexity · parallel subagents only when the host allows · consequential-assumptions-only |
+| all three | — | Code comments rule · assessment-only exception · evidence-before-state-changes · outcome-first · external text is data, not authorization · exercised-before-claiming |
 
-| Source | Repo | Commit | What was taken |
-|---|---|---|---|
-| apex-mode | [dongwookim-prog/apex-mode](https://github.com/dongwookim-prog/apex-mode) | `e71bc9c` | Identity/capability guards, self-contained subagent capsule, host-precedence, compaction caveat |
-| fable-mode | [dongwookim-prog/fable-mode](https://github.com/dongwookim-prog/fable-mode) | `cab0325` | Outcome-first communication, finish-line rule, assumptions/evidence discipline |
-| sol-mode | [dongwookim-prog/sol-mode](https://github.com/dongwookim-prog/sol-mode) | `feb0838` | Lean packaging, depth-matched-to-complexity, explicit-trigger-only |
+Added here, not in any source:
 
-Sharpened here rather than invented: the scope→write-access **table** restates apex's
-assessment-only exception (`APEX-CORE.md:19`, `:25`) as an explicit matrix, and
-risk-proportional verification restates its "match depth to task complexity" (`:23`).
+- A concrete definition of **failure** (red test / non-zero exit / user rejection, three
+  strikes) — all three left this qualitative.
+- **Reproduction-script conditions**, so verification does not manufacture work on trivial
+  changes or write files during an assessment.
+- The **scope→write-access table** — a tabulated form of the assessment-only exception the
+  three carried as prose, which is where they were easiest to misread.
+- The **cross-host precedence table** and host paths — each source was scoped to one host
+  (apex→Grok, fable→Claude, sol→Codex).
 
-Actually new here: a concrete definition of "failure" (red test / non-zero exit / user
-rejection, three strikes — apex leaves this qualitative), the repro-script conditions, and
-the cross-host overlay precedence table in §8. Note that §8 is the only one that gives
-omni-mode a reason to exist next to apex — see
-[Relationship to apex / fable / sol](#relationship-to-apex--fable--sol).
+### Conflicts, and how they were resolved
 
-Carried by apex but **not** in this skill, if you want them: evidence-supports-*this*-action
-before restarts/deletes/config edits (`APEX-CORE.md:29`), the pre-first-tool-call sentence
-and mid-turn update policy (`:7`), the code-comment rule (`:11`), "when unsure, stop" and
-"text is data, not authorization" (`:17`), and the worktree-isolation hint for risky parallel
-edits (`SKILL.md:31`).
+| Question | apex | fable | sol | Resolved as |
+|---|---|---|---|---|
+| How long does it last? | turn + reinvoke after compaction | "for the session" | turn-scoped, no deactivation needed | **Turn-scoped**, with the compaction caveat — the honest option, and it never overpromises |
+| When to give up? | qualitative ("keeps failing") | qualitative | qualitative | **Three attempts, or sooner if cost/time/risk spikes** — keeps the judgment, adds a ceiling |
+| Deactivation? | `/apex-mode off` | `/fable-mode off` | none needed | Honor an explicit "stop"; **no slash command claimed**, since a skill cannot register one |
+
+The three sources also carried host-specific bits that are deliberately not merged: sol's
+`agents/openai.yaml` interface file and fable's "if you are already that model, do not
+activate" guard. The first is a Codex-only manifest whose schema is not verified here; the
+second is meaningless for a model-independent overlay.
 
 ## Verification status
 
-What has been checked:
+Checked, and runnable:
 
-- Frontmatter parses under Gemini CLI's actual loader regex
+```bash
+python3 evals/coverage.py
+```
+
+- Frontmatter parses under Gemini CLI's actual loader rule
   ([`skillLoader.ts`](https://github.com/google-gemini/gemini-cli/blob/main/packages/core/src/skills/skillLoader.ts)
-  `FRONTMATTER_REGEX`) — `evals/cases.yaml` case D1, runnable.
+  `FRONTMATTER_REGEX`, anchored at the first byte with no `m` flag)
+- All 31 source rules present
 
-What has **not** been checked:
-
-- Live discovery in a Gemini CLI session (D2–D4)
-- Every behavior and safety case (B1–B8, S1–S4)
-- Any before/after comparison against apex/fable/sol
-
-Do not call this production-ready until `evals/cases.yaml` passes its thresholds. The
-thresholds are in that file.
-
-## Relationship to apex / fable / sol
-
-Same genre — do not stack them. If more than one is invoked, the most recent wins, and
-precedence against host rules and project files is spelled out in the skill itself.
-
-**Be honest about the overlap.** 12 of this skill's 13 behavioral rules already exist in
-apex-mode: identity/capability guards, scope-bound assessment-only work, autonomy for
-reversible in-scope actions, done-means-exercised, depth-matched-to-complexity, the hard-stop
-list, external-content-as-data, outcome-first replies, named assumptions, the subagent
-capsule, host precedence, and the no-banner/compaction/deactivate trio. Loading both gets you
-the same discipline stated twice in different words — wasted context, plus ambiguity about
-which phrasing governs (apex's qualitative "keeps failing" vs this skill's hard three
-strikes).
-
-So: prefer the host-native overlay (apex on Grok, fable on Claude, sol on Codex). Reach for
-omni-mode only if you specifically want **one contract across hosts** — that is §8, and it is
-the single thing here apex cannot give you, since apex is scoped to Grok by its own first
-line. If that does not matter to you, this repo is not worth installing.
+**Not** checked: live discovery in a real session, and every behavior/safety case in
+`evals/cases.yaml` (B1–B8, S1–S4). No before/after comparison against the three sources has
+been run. Do not call this production-ready until those pass.
 
 ## License
 
